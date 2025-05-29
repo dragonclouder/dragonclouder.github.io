@@ -1,0 +1,20 @@
+---
+title: "咏怀"
+layout: post
+date: 2017-01-04 13:01
+image: /assets/images/james.jpg
+headerImage: true
+tag: "野塘剩残荷"
+blog: true
+author: dragonclouder
+description: 万籁俱寂
+<!--star: true-->
+---
+<center>十里桃花开，</center>
+
+<center>芬芳幽入怀。</center>
+
+<center>曾言三生事，</center>
+
+<center>怎奈一岁哀。</center>
+

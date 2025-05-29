@@ -1,0 +1,23 @@
+---
+title: "芙蕖叹"
+layout: post
+date: 2017-01-02 23:00
+image: /assets/images/profile.jpg
+headerImage: false
+tag: "野塘剩残荷"
+blog: true
+author: dragonclouder
+description: 万籁俱寂
+<!--star: true-->
+---
+<center>芙蕖一朵含苞待，翠盖娉婷红粉腮</center><br>
+<center>芳心半卷清香在，何时移向月中栽</center><br>
+<center>深知身在情长在，不辞惆怅轻狂来</center><br>
+<center>莫道世界真意少，人间自古情痴在</center><br>
+<center>此身襟抱一朝开，不啻巫山又沧海</center><br>
+<center>花开何叹梦难再，情逢缘恰双今代</center><br>
+<center>芳华未忍轻攀折，月下悠悠两徘徊</center><br>
+<center>婀娜犹似旧时貌，芙蓉摩罗此心衰</center><br>
+<center>扑朔迷离当时意，只恐芳心未介怀</center><br>
+<center>寸心难改初时志，肯为清香卷土来</center><br>
+<center>微风惹起无穷波，直叫鱼龙嬉游哉</center><br>
