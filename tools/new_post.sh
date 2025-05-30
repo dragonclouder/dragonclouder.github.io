@@ -12,7 +12,7 @@ echo "QUERY_STRING was: $QUERY_STRING"
 POSTS_DIR="/Users/bytedance/Desktop/work/fun/dragonclouder.github.io/_posts"
 
 # 获取当前日期(格式：YYYY-MM-DD)
-DATE=$(date +%Y-%m-%d)
+DATE=$(date +'%Y-%m-%d-%H:%M:%S %z')
 
 # 从URL参数提取标题(支持中文)
 title=$(echo "$QUERY_STRING" | sed -n 's/.*title=\([^&]*\).*/\1/p' | sed 's/+/ /g' | iconv -f utf-8 -t utf-8)
