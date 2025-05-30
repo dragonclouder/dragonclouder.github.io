@@ -1,0 +1,87 @@
+name: Create New Post
+
+on:
+  repository_dispatch:
+    types: [create-new-post] # 这是我们将从客户端触发的事件类型
+
+jobs:
+  create_post_via_dispatch: # 重命名作业以避免与文件名冲突
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4 # 使用较新版本的 checkout action
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # GITHUB_TOKEN 具有写入仓库的权限
+
+      - name: Create new post file
+        env: # 将 client_payload 设置为环境变量，方便脚本使用
+          POST_TITLE: ${{ github.event.client_payload.title }}
+        run: |
+          if [ -z "$POST_TITLE" ]; then
+            echo "错误：文章标题为空。"
+            exit 1
+          fi
+
+          POSTS_DIR="_posts"
+          DATE=$(date +%Y-%m-%d)
+          
+          # 清理标题以用作文件名 (转换为小写，替换空格为连字符，移除大部分特殊字符)
+          FILENAME_SLUG=$(echo "$POST_TITLE" | \
+              iconv -f UTF-8 -t ASCII//TRANSLIT | \ # 尝试将非ASCII字符转为ASCII对应项
+              tr '[:upper:]' '[:lower:]' | \
+              sed -E 's/[^a-z0-9]+/-/g' | \ # 将所有非字母数字序列替换为单个连字符
+              sed -E 's/^-+|-+$//g')      # 移除开头和结尾的连字符
+
+          if [ -z "$FILENAME_SLUG" ]; then
+            FILENAME_SLUG="new-post-$(date +%s)" # 如果清理后为空，则使用时间戳作为备用名
+          fi
+
+          FULL_PATH="$POSTS_DIR/$DATE-$FILENAME_SLUG.md"
+          
+          # 确保 _posts 目录存在
+          mkdir -p $POSTS_DIR
+
+          # 转义标题中的双引号，以安全地用于 YAML Front Matter
+          ESCAPED_POST_TITLE_FOR_YAML=$(echo "$POST_TITLE" | sed 's/"/\\"/g')
+
+          # 创建 Markdown 文件内容
+          # 使用 ISO 8601 秒级精度日期时间，并包含时区偏移 (Z 表示 UTC)
+          # Jekyll 会根据站点配置处理时区
+          cat << EOF > "$FULL_PATH"
+          ---
+          layout: post
+          title: "$ESCAPED_POST_TITLE_FOR_YAML"
+          date: $(date -u +'%Y-%m-%d %H:%M:%S %z')
+          categories: [uncategorized]
+          tags: [new]
+          ---
+
+          这是新文章 "$ESCAPED_POST_TITLE_FOR_YAML" 的内容起点。
+          请开始编写您的内容。
+          EOF
+
+          echo "新文章已创建于: $FULL_PATH"
+          # 将文件路径和标题设置为输出变量，方便后续步骤使用
+          echo "file_path=$FULL_PATH" >> $GITHUB_OUTPUT
+          echo "committed_post_title=$POST_TITLE" >> $GITHUB_OUTPUT
+
+        id: create_file_step # 给步骤一个 ID
+
+      - name: Commit and push new post
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          FILE_TO_COMMIT="${{ steps.create_file_step.outputs.file_path }}" # 从上一步获取文件路径
+          COMMIT_MSG_TITLE="${{ steps.create_file_step.outputs.committed_post_title }}" # 从上一步获取标题
+
+          git add "$FILE_TO_COMMIT"
+          
+          # 检查是否有实际更改需要提交
+          if git diff --staged --quiet; then
+            echo "没有更改需要提交。"
+          else
+            git commit -m "feat: Add new post - $COMMIT_MSG_TITLE"
+            git push
+            echo "新文章已提交并推送到仓库。"
+          fi
