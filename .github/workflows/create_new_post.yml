@@ -9,9 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4 # 使用较新版本的 checkout action
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }} # GITHUB_TOKEN 具有写入仓库的权限
+          token: ${{ secrets.GITHUB_TOKEN }} # 添加显式 token 声明
+          persist-credentials: false # 禁用默认凭证持久化
 
       - name: Create new post file
         env: # 将 client_payload 设置为环境变量，方便脚本使用
@@ -68,9 +69,21 @@ jobs:
         id: create_file_step # 给步骤一个 ID
 
       - name: Commit and push new post
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 传递 token 到环境变量
         run: |
           git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com' # 使用官方 bot 邮箱
+          
+          git remote set-url origin https://x-access-token:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY
+          
+          git add "$FILE_TO_COMMIT"
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "feat: Add new post - $COMMIT_MSG_TITLE"
+            git push origin HEAD:main
+          fi
           
           FILE_TO_COMMIT="${{ steps.create_file_step.outputs.file_path }}" # 从上一步获取文件路径
           COMMIT_MSG_TITLE="${{ steps.create_file_step.outputs.committed_post_title }}" # 从上一步获取标题
@@ -85,3 +98,7 @@ jobs:
             git push
             echo "新文章已提交并推送到仓库。"
           fi
+
+# 在文件顶部添加权限声明
+permissions:
+  contents: write
