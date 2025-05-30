@@ -229,11 +229,3 @@ plugins:
   - jekyll-gist
 include: 
   - tools
-# 在现有配置中添加文件编码设置
-encoding: utf-8
-timezone: Asia/Shanghai  # 确保时区正确
-defaults:
-  - scope:
-      path: "_posts"
-    values:
-      encoding: utf-8  # 强制指定文章编码
