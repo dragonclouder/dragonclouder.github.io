@@ -2,7 +2,7 @@
 title: "芙蕖叹"
 layout: post
 date: 2017-01-02 23:00
-image: /assets/images/profile.jpg
+image: /assets/images/james.jpg
 headerImage: false
 tag: "野塘剩残荷"
 blog: true
